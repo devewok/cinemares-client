@@ -1,0 +1,108 @@
+body {
+	background: linear-gradient(-135deg, #442AF4, #211475, #442AF4);
+	background-size: 400% 400%;
+	animation: gradient 10s ease infinite;
+	height: 100vh;
+}
+
+@keyframes gradient {
+	0% {
+		background-position: 0% 25%;
+	}
+  20%{
+		background-position: 20% 50%;
+  }
+	40% {
+		background-position: 60% 75%;
+	}
+	60% {
+		background-position: 60% 75%;
+	}
+	80% {
+		background-position: 20% 50%;
+	}
+	100% {
+		background-position: 0% 25%;
+	}
+}
+#reproductor{
+  width: 100%;
+  height: 100vh;
+  position: fixed;
+  z-index: -1;
+  left: 0;
+  top: 0;
+  object-fit: cover;
+}
+.login-container{
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.login-container #title{
+  /* font-family: 'The Nautigal'; */
+  font-family: 'Lobster';
+  font-size: 8rem;
+	color:#A84026;
+}
+.login-items{
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.login-items input{
+  outline: none;
+  border: none;
+  border-bottom: 2px solid black;
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  font-family: 'Quicksand';
+  background-color: transparent;
+  color: whitesmoke;
+}
+.login-items input::placeholder{
+  color: whitesmoke;
+  font-family: 'Quicksand';
+  font-size: 1rem;
+}
+#chat-container{
+  width: 30%;
+  height: 100vh;
+  position: fixed;
+  right: 0;
+  top: 0;
+}
+#chat-messages{
+  width: 100%;
+  height: 90%;
+  scroll-behavior: smooth;
+  overflow-y: scroll;
+}
+#chat-messages::-webkit-scrollbar{
+  display: none;
+}
+#chat-messages{
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+#chat-message{
+  text-align: left;
+}
+#chat-form{
+  width: 100%;
+  height: 10%;
+}
+#chat-form input{
+  width: 100%;
+  height: 100%;
+  outline: none;
+  border: none;
+  text-align:left;
+  background-color: transparent;
+  color: white;
+}
