@@ -1,7 +1,7 @@
-import {useEffect, useRef, useState} from 'react';
+import { useEffect, useRef, useState } from 'react';
 import './App.css';
 import LoginScreen from './components/screens/LoginScreen';
-import {SwitchTransition, CSSTransition} from 'react-transition-group';
+import { SwitchTransition, CSSTransition } from 'react-transition-group';
 import styled from "styled-components";
 import useReproductor from "./components/hooks/useReproductor"
 import ChatScreen from './components/screens/ChatScreen';
@@ -18,10 +18,10 @@ import MovieScreen from './components/screens/MovieScreen';
 // </Transition>
 // );
 function App() {
-  const [data, setData] = useState({user: null, url: null})
+  const [data, setData] = useState({ user: null, url: null })
   const [isJoined, setIsJoined] = useState(false)
   const refReproductor = useRef(null)
-  const {isStarted, tooglePlay, handleGetTime} = useReproductor(refReproductor);
+  const { isStarted, tooglePlay, handleGetTime } = useReproductor(refReproductor);
   return (
     <div className="App">
       <CSSTransition in={isJoined} timeout={500} unmountOnExit mountOnEnter classNames="fade">
@@ -29,7 +29,7 @@ function App() {
       </CSSTransition>
       {!isStarted
         ? <LoginScreen setData={setData} setIsJoined={setIsJoined} user={data.user} isStarted={isStarted} />
-        : <MovieScreen refReproductor={refReproductor} url={data.url} />}
+        : <MovieScreen ref={refReproductor} url={data.url} />}
     </div >
   );
 }
