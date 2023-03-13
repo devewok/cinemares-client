@@ -1,43 +1,37 @@
-import {useRef, useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import './App.css';
-import MovieScreen from './components/screens/MovieScreen';
 import LoginScreen from './components/screens/LoginScreen';
-import {SwitchTransition, Transition} from 'react-transition-group';
+import {SwitchTransition, CSSTransition} from 'react-transition-group';
 import styled from "styled-components";
+import useReproductor from "./components/hooks/useReproductor"
+import ChatScreen from './components/screens/ChatScreen';
+import MovieScreen from './components/screens/MovieScreen';
 
-const FadeDiv = styled.div`
-  transition: 2.5s;
-  opacity: ${({state}) => (state === "entered" ? 1 : 0)};
-  display: ${({state}) => (state === "exited" ? "none" : "block")};
-`;
-const FadeTransition = ({children, ...rest}) => (
-  <Transition {...rest}>
-    {state => <FadeDiv state={state}>{children}</FadeDiv>}
-  </Transition>
-);
+// const FadeDiv = styled.div`
+// transition: 3s;
+// opacity: ${({state}) => (state === "entered" ? 1 : 0)};
+// display: ${({state}) => (state === "exited" ? "none" : "block")};
+// `;
+// const FadeTransition = ({children, ...rest}) => (
+// <Transition {...rest}>
+// {state => <FadeDiv state={state}>{children}</FadeDiv>}
+// </Transition>
+// );
 function App() {
+  const [data, setData] = useState({user: null, url: null})
   const [isJoined, setIsJoined] = useState(false)
-  const [user, setUser] = useState("")
-  const nodeRef = useRef(null);
+  const refReproductor = useRef(null)
+  const {isStarted, tooglePlay, handleGetTime} = useReproductor(refReproductor);
   return (
     <div className="App">
-      <SwitchTransition>
-        <FadeTransition timeout={500} nodeRef={nodeRef} unmountOnExit key={isJoined ? "movie" : "login"}>
-          {isJoined
-            ? <MovieScreen user={user} />
-            : <LoginScreen setUser={setUser} setIsJoined={setIsJoined} />
-          }
-        </FadeTransition>
-      </SwitchTransition>
+      <CSSTransition in={isJoined} timeout={500} unmountOnExit mountOnEnter classNames="fade">
+        <ChatScreen tooglePlay={tooglePlay} user={data.user} handleGetTime={handleGetTime} />
+      </CSSTransition>
+      {!isStarted
+        ? <LoginScreen setData={setData} setIsJoined={setIsJoined} user={data.user} isStarted={isStarted} />
+        : <MovieScreen refReproductor={refReproductor} url={data.url} />}
     </div >
   );
 }
 
-// return (
-// <div className="App">
-// {isJoined
-// ? (<MovieScreen user={user} />)
-// : (<LoginScreen setUser={setUser} setIsJoined={setIsJoined} />)}
-// </div>
-// );
 export default App;

@@ -1,25 +1,34 @@
-import {useEffect, useRef} from "react";
-import {io} from "socket.io-client";
+import { useEffect, useRef } from "react";
+import { io } from "socket.io-client";
 
-const ChatScreen = ({tooglePlay, handleGetTime, user}) => {
-  const socket = io("http://localhost:3000")
+const ChatScreen = ({ tooglePlay, handleGetTime, user }) => {
+  const socket = io("http://3.88.118.58:5000")
   const refMessage = useRef()
-  var colorMessage = "#FFFFFF"
+  var colorMessage = useRef("#FFFFFF")
   const refChat = useRef()
   const onCommand = {
     "#pause": () => tooglePlay(),
     "#play": () => tooglePlay(),
     "#color": () => getRandomColor(),
+    "#clear": () => {
+      while (refChat.current.lastElementChild) {
+        refChat.current.removeChild(refChat.current.lastElementChild)
+      }
+    },
     "#time": () => console.log(handleGetTime())
   }
   const onSubmit = (event) => {
     event.preventDefault()
     const data = refMessage.current.value
-    const message = {"data": data, "user": user, "colorMessages": colorMessage}
+    const message = { "data": data, "user": user, "colorMessages": colorMessage.current }
     if (data) {
       handleMessage(message)
       if (data[0] === "#") {
-        onCommand[data]();
+        try {
+          onCommand[data]();
+        } catch (error) {
+
+        }
       }
       socket.emit("moviechat", message)
       refMessage.current.value = ""
@@ -59,13 +68,13 @@ const ChatScreen = ({tooglePlay, handleGetTime, user}) => {
     for (var i = 0; i < 6; i++) {
       color += letters[Math.floor(Math.random() * 16)];
     }
-    colorMessage = color
+    colorMessage.current = color
   }
   return (
     <div id="chat-container">
       <div id="chat-messages" ref={refChat} />
       <form id="chat-form" onSubmit={onSubmit}>
-        <input placeholder="Chat" ref={refMessage} />
+        <input placeholder="Chat" ref={refMessage} color={colorMessage.current} />
       </form>
     </div >
   )
