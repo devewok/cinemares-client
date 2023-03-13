@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { io } from "socket.io-client";
 
 const ChatScreen = ({ tooglePlay, handleGetTime, user }) => {
-  const socket = io("http://3.88.118.58:5000")
+  const socket = io("https://cinemares-server-production.up.railway.app:7521")
   const refMessage = useRef()
   var colorMessage = useRef("#FFFFFF")
   const refChat = useRef()
