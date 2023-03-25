@@ -1,31 +1,25 @@
-import {useEffect, useState} from "react";
+import { useCallback, useEffect } from "react";
 
-const useReproductor = (refReproductor) => {
-  const [isPlaying, setIsPlaying] = useState(false)
-  const [isStarted, setIsStarted] = useState(false)
-
-  const tooglePlay = () => {
-    setIsPlaying(prev => !prev)
-    if (!isStarted)
-      setIsStarted(true)
-  }
-  const handleGetTime = () => {
+const useReproductor = (refReproductor, data) => {
+  const handleGetTime = useCallback(() => {
     const progress = (refReproductor.current.currentTime / refReproductor.current.duration) * 100;
     return progress
-  }
-  const handleSetTime = (time) => {
-    setIsPlaying(false)
-    refReproductor.current.currentTime = time
-  }
+  }, [refReproductor])
+  const handleSetTime = useCallback((time) => {
+    if (!data.isPlaying)
+      refReproductor.current.currentTime = (time * refReproductor.current.duration) / 100
+  }, [refReproductor, data.isPlaying])
   useEffect(() => {
     if (refReproductor.current) {
-      isPlaying
-        ? refReproductor.current.play()
-        : refReproductor.current.pause()
+      if (data.isPlaying) {
+        refReproductor.current.play()
+      } else {
+        refReproductor.current.pause()
+      }
     }
-  }, [isPlaying, refReproductor])
+  }, [data.isPlaying, refReproductor])
 
-  return {isStarted, tooglePlay, handleSetTime, handleGetTime}
+  return { handleSetTime, handleGetTime }
 }
 
 export default useReproductor;

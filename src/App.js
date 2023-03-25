@@ -1,34 +1,22 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import './App.css';
 import LoginScreen from './components/screens/LoginScreen';
-import { SwitchTransition, CSSTransition } from 'react-transition-group';
-import styled from "styled-components";
+import { CSSTransition } from 'react-transition-group';
 import useReproductor from "./components/hooks/useReproductor"
 import ChatScreen from './components/screens/ChatScreen';
 import MovieScreen from './components/screens/MovieScreen';
 
-// const FadeDiv = styled.div`
-// transition: 3s;
-// opacity: ${({state}) => (state === "entered" ? 1 : 0)};
-// display: ${({state}) => (state === "exited" ? "none" : "block")};
-// `;
-// const FadeTransition = ({children, ...rest}) => (
-// <Transition {...rest}>
-// {state => <FadeDiv state={state}>{children}</FadeDiv>}
-// </Transition>
-// );
 function App() {
-  const [data, setData] = useState({ user: null, url: null })
-  const [isJoined, setIsJoined] = useState(false)
+  const [data, setData] = useState({ user: null, url: null, isPlaying: false, isStarted: false, isJoined: false })
   const refReproductor = useRef(null)
-  const { isStarted, tooglePlay, handleGetTime } = useReproductor(refReproductor);
+  const { handleGetTime, handleSetTime } = useReproductor(refReproductor, data);
   return (
     <div className="App">
-      <CSSTransition in={isJoined} timeout={500} unmountOnExit mountOnEnter classNames="fade">
-        <ChatScreen tooglePlay={tooglePlay} user={data.user} handleGetTime={handleGetTime} />
+      <CSSTransition in={data.isJoined} timeout={500} unmountOnExit mountOnEnter classNames="fade">
+        <ChatScreen tooglePlay={(value) => setData(prev => ({ ...prev, isPlaying: prev.isStarted ? value : false }))} startMovie={() => setData(prev => ({ ...prev, isStarted: true }))} isStarted={data.isStarted} user={data.user} handleSetTime={handleSetTime} handleGetTime={handleGetTime} />
       </CSSTransition>
-      {!isStarted
-        ? <LoginScreen setData={setData} setIsJoined={setIsJoined} user={data.user} isStarted={isStarted} />
+      {!data.isStarted
+        ? <LoginScreen setData={setData} setIsJoined={() => setData(prev => ({ ...prev, isJoined: true }))} user={data.user} isStarted={data.isStarted} />
         : <MovieScreen ref={refReproductor} url={data.url} />}
     </div >
   );

@@ -71,7 +71,8 @@
   z-index: -1;
   left: 0;
   top: 0;
-  object-fit: cover;
+  object-fit: contain;
+  background-color: black;
 }
 
 .login-container #title {
@@ -139,6 +140,7 @@
 #chat-messages {
   position: relative;
   width: 25%;
+  font-weight: bold;
   display: flex;
   overflow-wrap: break-word;
   flex-direction: column;
@@ -176,6 +178,8 @@
   outline: none;
   border: none;
   text-align: left;
+  padding-left: 20px;
+  font-size: 18px;
   background-color: rgba(0, 0, 0, 0.25);
   color: white;
 }

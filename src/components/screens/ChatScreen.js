@@ -1,67 +1,109 @@
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { io } from "socket.io-client";
 
-const ChatScreen = ({ tooglePlay, handleGetTime, user }) => {
-  const socket = io("https://cinemares-server.fly.dev")
+const ChatScreen = ({ tooglePlay, isStarted, startMovie, handleSetTime, handleGetTime, user }) => {
+  const socket = useRef(io("http://3.88.118.58:5000"))
   const refMessage = useRef()
   var colorMessage = useRef("#FFFFFF")
   const refChat = useRef()
-  const onCommand = {
-    "#pause": () => tooglePlay(),
-    "#play": () => tooglePlay(),
-    "#color": () => getRandomColor(),
-    "#clear": () => {
-      while (refChat.current.lastElementChild) {
-        refChat.current.removeChild(refChat.current.lastElementChild)
-      }
-    },
-    "#time": () => console.log(handleGetTime())
-  }
+  const onCommand = useCallback((cmd, usercmd, extraData) => {
+    switch (cmd) {
+      case "#time":
+        if (isStarted) {
+          const message = { "data": `Tiempo de película: ${handleGetTime()}`, "user": user, "colorMessages": colorMessage.current }
+          socket.current.emit("moviechat", message)
+        }
+        break;
+      case "#clear":
+        while (refChat.current.lastElementChild) {
+          refChat.current.removeChild(refChat.current.lastElementChild)
+        }
+        break;
+      case "#sync":
+        if (isStarted) {
+          handleSetTime(parseFloat(extraData))
+        }
+        break;
+      case "#color":
+        if (user === usercmd) {
+          getRandomColor()
+        }
+        break;
+      case "#start":
+        if (!isStarted) {
+          startMovie()
+        }
+        break;
+      case "#play":
+        if (isStarted) {
+          tooglePlay(true)
+        }
+        break;
+      case "#pause":
+        if (isStarted) {
+          tooglePlay(false)
+        }
+        break;
+    }
+  }, [tooglePlay, startMovie, handleGetTime, isStarted])
   const onSubmit = (event) => {
     event.preventDefault()
     const data = refMessage.current.value
-    const message = { "data": data, "user": user, "colorMessages": colorMessage.current }
+    let message = { data, "user": user, "colorMessages": colorMessage.current, extraData: "" }
     if (data) {
-      handleMessage(message)
-      if (data[0] === "#") {
-        try {
-          onCommand[data]();
-        } catch (error) {
-
-        }
+      if (message.data === "#sync") {
+        message.extraData = handleGetTime()
       }
-      socket.emit("moviechat", message)
+      socket.current.emit("moviechat", message)
       refMessage.current.value = ""
     }
   }
-  const handleMessage = (message) => {
+  const handleMessage = useCallback((message) => {
     var divMessage = document.createElement('div');
     if (message.data[0] !== "#") {
       divMessage.textContent = message.user + " \u2192 " + message.data
-    } else if (message.data === "#pause") {
+    } else if (message.data === "#pause" && isStarted) {
       divMessage.textContent = message.user + " ha pausado la película"
-    } else if (message.data === "#play") {
+    } else if (message.data === "#play" && isStarted) {
       divMessage.textContent = message.user + " ha iniciado la película"
+    } else if (message.data === "#start" && !isStarted) {
+      divMessage.textContent = "La película va a empezar "
+    } else if (message.data === "#sync" && isStarted) {
+      divMessage.textContent = message.user + " ha sincronizado la película"
     }
     divMessage.classList.add("chat-message")
     divMessage.style.color = message.colorMessages
     refChat.current.appendChild(divMessage)
     refChat.current.scrollTop = refChat.current.scrollHeight
-  }
+  }, [handleSetTime, handleGetTime, isStarted])
   useEffect(() => {
-    const callback = (message) => {
-      if (message.user !== user) {
+    let callbackCmd = (message) => {
+      try {
+        onCommand(message.data, message.user, message.extraData)
+      } catch (error) {
+        console.log(error)
+
+      }
+      try {
         handleMessage(message)
-        if (message.data[0] === "#" && message.data !== "#color") {
-          onCommand[message.data]();
-        }
+      } catch (error) {
+
       }
     }
-    socket.on("moviechat", callback)
+    socket.current.on("cmd", callbackCmd)
     return () => {
-      socket.off("moviechat", callback);
+      socket.current.off("cmd", callbackCmd);
     }
-  })
+  }, [onCommand, handleMessage])
+  useEffect(() => {
+    let callbackMoviechat = (message) => {
+      handleMessage(message)
+    }
+    socket.current.on("moviechat", callbackMoviechat)
+    return () => {
+      socket.current.off("moviechat", callbackMoviechat);
+    }
+  }, [handleMessage])
   const getRandomColor = () => {
     var letters = '0123456789ABCDEF';
     var color = '#';
@@ -74,7 +116,7 @@ const ChatScreen = ({ tooglePlay, handleGetTime, user }) => {
     <div id="chat-container">
       <div id="chat-messages" ref={refChat} />
       <form id="chat-form" onSubmit={onSubmit}>
-        <input placeholder="Chat" ref={refMessage} color={colorMessage.current} />
+        <input id="chat-input" placeholder="Chat" ref={refMessage} color={colorMessage.current} />
       </form>
     </div >
   )
