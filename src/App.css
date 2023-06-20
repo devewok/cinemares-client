@@ -2,6 +2,7 @@
   background: linear-gradient(27deg, #150409, #4b0786, #862707);
   background-size: 600% 600%;
   height: 100vh;
+  width: 100%;
   -webkit-animation: AnimationName 19s ease infinite;
   -moz-animation: AnimationName 19s ease infinite;
   -o-animation: AnimationName 19s ease infinite;
@@ -63,14 +64,17 @@
     background-position: 91% 0%
   }
 }
+.App{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+}
 
 #reproductor {
-  width: 100%;
+  width: 78%;
+  max-width: 78%;
   height: 100vh;
-  position: fixed;
-  z-index: -1;
-  left: 0;
-  top: 0;
   object-fit: contain;
   background-color: black;
 }
@@ -127,19 +131,18 @@
 }
 
 #chat-container {
-  width: 100%;
+  width: 22%;
+  min-width:22%;
   height: 100vh;
-  position: fixed;
-  right: 0;
-  top: 0;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
+  background-color: black;
 }
 
 #chat-messages {
   position: relative;
-  width: 25%;
+  width: 100%;
   font-weight: bold;
   display: flex;
   overflow-wrap: break-word;
@@ -175,12 +178,12 @@
 #chat-form input {
   width: 100%;
   height: 100%;
+  padding: 0;
   outline: none;
   border: none;
   text-align: left;
-  padding-left: 20px;
   font-size: 18px;
-  background-color: rgba(0, 0, 0, 0.25);
+  background-color: rgba(0, 0, 0);
   color: white;
 }
 

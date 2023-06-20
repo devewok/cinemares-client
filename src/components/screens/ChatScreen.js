@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef } from "react";
 import { io } from "socket.io-client";
 
 const ChatScreen = ({ tooglePlay, isStarted, startMovie, handleSetTime, handleGetTime, user }) => {
-  const socket = useRef(io("http://3.88.118.58:5000"))
+  const socket = useRef(io("http://198.58.100.116:3003"))
   const refMessage = useRef()
   var colorMessage = useRef("#FFFFFF")
   const refChat = useRef()
@@ -82,7 +82,6 @@ const ChatScreen = ({ tooglePlay, isStarted, startMovie, handleSetTime, handleGe
         onCommand(message.data, message.user, message.extraData)
       } catch (error) {
         console.log(error)
-
       }
       try {
         handleMessage(message)
