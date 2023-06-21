@@ -1,6 +1,7 @@
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useRef } from "react";
 
-const useReproductor = (refReproductor, data) => {
+const useReproductor = (data) => {
+  const refReproductor=useRef()
   const handleGetTime = useCallback(() => {
     const progress = (refReproductor.current.currentTime / refReproductor.current.duration) * 100;
     return progress
@@ -16,10 +17,16 @@ const useReproductor = (refReproductor, data) => {
       } else {
         refReproductor.current.pause()
       }
+      console.log(data)
     }
-  }, [data.isPlaying, refReproductor])
+  }, [data.isPlaying, refReproductor.current])
 
-  return { handleSetTime, handleGetTime }
+  const ReproductorElement=useCallback(()=>{
+      return <video id="reproductor" className="reproductor" ref={refReproductor} src={data.url.indexOf("http") === 0 ? data.url : "http://198.58.100.116:3003/video/" + data.url} type="video/mp4" />
+  
+  },[data.url])
+
+  return { handleSetTime, handleGetTime, ReproductorElement }
 }
 
 export default useReproductor;
